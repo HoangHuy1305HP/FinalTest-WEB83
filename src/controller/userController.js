@@ -1,6 +1,6 @@
 import User from "../model/userModel.js";
 import Teacher from "../model/Teacher.js";
-import Position from "../model/TeacherPosition.js"; // Đổi TeacherPosition thành Position
+import Position from "../model/TeacherPosition.js"; 
 import { v4 as uuidv4 } from "uuid";
 
 // 1.1 GET /teachers - Lấy danh sách giáo viên với thông tin chi tiết
@@ -8,9 +8,9 @@ export const fetchTeachers = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
   try {
-    const teacherList = await Teacher.find({ deletedStatus: false }) // đổi isDeleted thành deletedStatus
-      .populate("userId", "fullName emailAddress contactNumber residentialAddress") // đổi các trường cho phù hợp
-      .populate("positionRefs", "title") // đổi teacherPositions thành positionRefs, name thành title
+    const teacherList = await Teacher.find({ deletedStatus: false }) 
+      .populate("userId", "fullName emailAddress contactNumber residentialAddress") 
+      .populate("positionRefs", "title") 
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
@@ -39,13 +39,13 @@ export const addTeacher = async (req, res) => {
     let uniqueTeacherCode;
     do {
       uniqueTeacherCode = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-    } while (await Teacher.exists({ teacherCode: uniqueTeacherCode })); // đổi code thành teacherCode
+    } while (await Teacher.exists({ teacherCode: uniqueTeacherCode })); 
 
     const newTeacher = new Teacher({
       userId: newUser._id,
-      teacherCode: uniqueTeacherCode, // đổi code thành teacherCode
-      qualifications, // đổi degrees thành qualifications
-      positionRefs, // đổi teacherPositions thành positionRefs
+      teacherCode: uniqueTeacherCode, 
+      qualifications, 
+      positionRefs, 
     });
 
     await newTeacher.save();
@@ -59,7 +59,7 @@ export const addTeacher = async (req, res) => {
 // 1.4 GET /teacher-positions - Lấy danh sách vị trí công tác
 export const listPositions = async (req, res) => {
   try {
-    const allPositions = await Position.find({ statusDeleted: false }); // đổi isDeleted thành statusDeleted
+    const allPositions = await Position.find({ statusDeleted: false }); 
     res.status(200).json(allPositions);
   } catch (err) {
     res.status(500).json({ error: "Could not retrieve positions." });
@@ -68,16 +68,16 @@ export const listPositions = async (req, res) => {
 
 // 1.5 POST /teacher-positions - Tạo vị trí công tác mới
 export const addPosition = async (req, res) => {
-  const { title, description } = req.body; // đổi name thành title
+  const { title, description } = req.body; 
 
   try {
     // Sinh mã code ngẫu nhiên, đảm bảo không trùng lặp
     let generatedPositionCode;
     do {
       generatedPositionCode = uuidv4();
-    } while (await Position.exists({ positionCode: generatedPositionCode })); // đổi code thành positionCode
+    } while (await Position.exists({ positionCode: generatedPositionCode })); 
 
-    const newPosition = new Position({ title, positionCode: generatedPositionCode, description }); // đổi các trường tương ứng
+    const newPosition = new Position({ title, positionCode: generatedPositionCode, description }); 
     await newPosition.save();
 
     res.status(201).json({ message: "Position created successfully", newPosition });
